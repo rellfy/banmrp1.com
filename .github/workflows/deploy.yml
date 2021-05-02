@@ -1,0 +1,15 @@
+﻿name: Deploy
+on:
+  push:
+    branches: [master]
+jobs:
+  deployment:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy
+      uses: fjogeleit/http-request-action@master
+      with:
+        url: "http://rellfy.com:1337/restart/banmrp1.com"
+        method: "POST"
+        bearerToken: ${{ secrets.TOKEN }}
+        timeout: 60000
