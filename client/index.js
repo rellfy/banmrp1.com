@@ -32,7 +32,6 @@ async function sign(e) {
 async function loadSigners() {
   const response = await fetch("/signers");
   const signers = (await response.json()).signers;
-  console.log(signers);
   signers.forEach(signer => {
     addSigner(signer);
   });
