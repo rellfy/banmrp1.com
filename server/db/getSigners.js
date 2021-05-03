@@ -11,6 +11,7 @@ const updateCache = async () => {
     FROM signatures
   `))?.rows?.map(x => x.signature) ?? [];
   client.release();
+  lastFetchTime = Date.now();
 };
 
 module.exports = async () => {
