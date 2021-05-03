@@ -30,6 +30,7 @@ module.exports.setupTables = async () => {
  * @returns {Promise<boolean>}
  */
 const signerExists = async (signature, ipHash) => {
+  const client = await pool.connect();
   const hasSignature = (await client.query(`
     SELECT *
     FROM signatures
@@ -44,6 +45,7 @@ const signerExists = async (signature, ipHash) => {
     WHERE LOWER(ipHash)=LOWER($1)
     LIMIT 1
   `, [ipHash]))?.rows?.length === 1;
+  client.release();
   return hasIpHash;
 };
 
@@ -53,6 +55,7 @@ const signerExists = async (signature, ipHash) => {
  * @returns {Promise<void>}
  */
 module.exports.addSigner = async (signature, ipHash) => {
+  const client = await pool.connect();
   if (await signerExists(signature, ipHash))
     return;
   try {
@@ -67,3 +70,5 @@ module.exports.addSigner = async (signature, ipHash) => {
     client.release();
   }
 };
+
+module.exports.pool = pool;
