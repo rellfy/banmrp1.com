@@ -25,10 +25,11 @@ server.post("/sign", async (request, response) => {
       return response.send({ error: "sign correctly noob" });
     const ipHash = sha256(request.connection.remoteAddress);
     await db.addSigner(signer, ipHash);
-  } catch (e) {
-    return response.send({ error: "not today noob" });
+  } catch (error) {
+    return response.send({ error });
   }
   response.send({ error: null });
 });
 
 server.listen(process.env.PORT || 80);
+db.setupTables().then(() => { console.log("db initialised") });

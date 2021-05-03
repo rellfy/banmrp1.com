@@ -57,7 +57,8 @@ const signerExists = async (signature, ipHash) => {
 module.exports.addSigner = async (signature, ipHash) => {
   const client = await pool.connect();
   if (await signerExists(signature, ipHash))
-    return;
+    throw "cant sign twice noob";
+  let error = null;
   try {
     await client.query("BEGIN");
     await client.query(insertSignature, [signature]);
@@ -66,9 +67,12 @@ module.exports.addSigner = async (signature, ipHash) => {
   } catch (e) {
     await client.query("ROLLBACK");
     console.error(e);
+    error = "not today noob";
   } finally {
     client.release();
   }
+  if (error != null)
+    throw error;
 };
 
 module.exports.pool = pool;
