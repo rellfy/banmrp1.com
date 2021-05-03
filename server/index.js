@@ -21,7 +21,7 @@ server.get("/signers", (request, response) => {
 });
 server.post("/sign", (request, response) => {
   const signer = request.body?.signer;
-  const ipHash = sha256(request.headers["x-forwarded-for"] || request.connection.remoteAddress);
+  const ipHash = sha256(request.connection.remoteAddress);
   if (ipHashes.includes(ipHash))
     return response.send({ error: "cant sign twice noob" });
   if (signer == null || signer.length < 2 || typeof signer !== "string" || signer.length > 50)
