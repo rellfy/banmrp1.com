@@ -3,9 +3,8 @@ const path = require("path");
 const server = express();
 const clientPath = path.resolve(__dirname, "../client/");
 const crypto = require("crypto");
-
-const signers = [];
-const ipHashes = [];
+const getSigners = require("./db/getSigners");
+const db = require("./db");
 
 const sha256 = (x) => {
   return crypto.createHash("sha256").update(x).digest("hex");
@@ -16,18 +15,19 @@ server.use(express.static(path.join(clientPath)));
 server.get("/", (request, response) => {
   response.sendFile(path.join(clientPath, "index.html"));
 });
-server.get("/signers", (request, response) => {
-  response.send({ signers });
+server.get("/signers", async (request, response) => {
+  response.send({ signers: await getSigners() });
 });
-server.post("/sign", (request, response) => {
-  const signer = request.body?.signer;
-  const ipHash = sha256(request.connection.remoteAddress);
-  if (ipHashes.includes(ipHash))
-    return response.send({ error: "cant sign twice noob" });
-  if (signer == null || typeof signer !== "string" || signer.length < 2 || signer.length > 50)
-    return response.send({ error: "sign correctly noob" });
-  ipHashes.push(ipHash);
-  signers.push(signer);
+server.post("/sign", async (request, response) => {
+  try {
+    const signer = request.body?.signer;
+    if (signer == null || typeof signer !== "string" || signer.length < 2 || signer.length > 50) 
+      return response.send({ error: "sign correctly noob" });
+    const ipHash = sha256(request.connection.remoteAddress);
+    await db.addSigner(signer, ipHash);
+  } catch (e) {
+    return response.send({ error: "not today noob" });
+  }
   response.send({ error: null });
 });
 
