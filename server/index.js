@@ -21,7 +21,7 @@ server.get("/signers", async (request, response) => {
   response.send({ signers: await getSigners() });
 });
 server.post("/sign", async (request, response) => {
-  const ipHash = sha256(request.connection.remoteAddress);
+  const ipHash = sha256(request.headers["x-real-ip"] || request.connection.remoteAddress);
   if (processingIpHashes.includes(ipHash))
     return response.send({ error: "only click the button once noob" });
   processingIpHashes.push(ipHash);
