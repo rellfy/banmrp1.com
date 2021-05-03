@@ -24,7 +24,7 @@ server.post("/sign", (request, response) => {
   const ipHash = sha256(request.connection.remoteAddress);
   if (ipHashes.includes(ipHash))
     return response.send({ error: "cant sign twice noob" });
-  if (signer == null || signer.length < 2 || typeof signer !== "string" || signer.length > 50)
+  if (signer == null || typeof signer !== "string" || signer.length < 2 || signer.length > 50)
     return response.send({ error: "sign correctly noob" });
   ipHashes.push(ipHash);
   signers.push(signer);
